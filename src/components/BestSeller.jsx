@@ -3,10 +3,12 @@ import Title from "./Title";
 import ProductItem from "./ProductItem";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ShopContext } from "../context/ShopContext";
 
 const BestSeller = () => {
   const [bestSeller, setBestSeller] = useState([]);
-  
+  const { products } = useContext(ShopContext);
+
   useEffect(() => {
     const fetchBestSellers = async () => {
       try {
@@ -16,12 +18,14 @@ const BestSeller = () => {
         setBestSeller(response.data);
       } catch (error) {
         toast.error("Error fetching bestseller products:", error);
+        const fallbackBestSellers = products.filter((product) => product.bestSeller === true);
+        setBestSeller(fallbackBestSellers);
       }
     };
     fetchBestSellers();
     const intervalId = setInterval(fetchBestSellers, 5000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [products]);
 
   return (
     <div className="my-10">
